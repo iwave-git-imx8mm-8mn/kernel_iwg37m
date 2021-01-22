@@ -1,0 +1,404 @@
+/*
+ * Copyright (C) 2020 iWave System Technologies Pvt Ltd.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+/dts-v1/;
+
+#include "imx8mn-iwg37m.dts"
+
+/ {
+	model = "iW-RainboW-G37M-i.MX8MN-SODIMM-1GB";
+	compatible = "fsl,imx8mn-iwg37m", "fsl,imx8mn";
+
+	/* external oscillator node */
+	osc: oscillator {
+		compatible = "fixed-clock";
+		#clock-cells = <1>;
+		clock-frequency  = <32768>;
+		clock-output-names = "osc";
+	};
+
+	audioclk: ext26Mz { /* SAI5: Clock Configuration */
+		compatible = "fixed-clock";
+		clock-frequency = <26000000>;
+		#clock-cells = <0>;
+	};
+
+	regulators {
+		compatible = "simple-bus";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		reg_3p3v: 3p3v { /* Fixed Regulator: common 3.3V Fixed regulator */
+			compatible = "regulator-fixed";
+			regulator-name = "3P3V";
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3300000>;
+			regulator-always-on;
+		};
+	};
+
+	pwm_backlight1: pwm-backlight1 { /* PWM: PWM1 backlight Control */
+		compatible = "pwm-backlight";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_pwm1>;
+		pwms = <&pwm1 0 100000 0>;
+
+		brightness-levels = < 0 1 2 3 4 5 6 7 8 9
+				10 11 12 13 14 15 16 17 18 19
+				20 21 22 23 24 25 26 27 28 29
+				30 31 32 33 34 35 36 37 38 39
+				40 41 42 43 44 45 46 47 48 49
+				50 51 52 53 54 55 56 57 58 59
+				60 61 62 63 64 65 66 67 68 69
+				70 71 72 73 74 75 76 77 78 79
+				80 81 82 83 84 85 86 87 88 89
+				90 91 92 93 94 95 96 97 98 99
+				100>;
+		default-brightness-level = <100>;
+		status = "okay";
+	};
+
+	pwm_backlight2: pwm-backlight2 { /* PWM: PWM2 backlight Control */
+		compatible = "pwm-backlight";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_pwm2>;
+		pwms = <&pwm2 0 100000 0>;
+
+		brightness-levels = < 0 1 2 3 4 5 6 7 8 9
+				10 11 12 13 14 15 16 17 18 19
+				20 21 22 23 24 25 26 27 28 29
+				30 31 32 33 34 35 36 37 38 39
+				40 41 42 43 44 45 46 47 48 49
+				50 51 52 53 54 55 56 57 58 59
+				60 61 62 63 64 65 66 67 68 69
+				70 71 72 73 74 75 76 77 78 79
+				80 81 82 83 84 85 86 87 88 89
+				90 91 92 93 94 95 96 97 98 99
+				100>;
+		default-brightness-level = <100>;
+		status = "okay";
+	};
+
+	carrier_revision {
+                compatible = "carrier_revision";
+                pinctrl-names = "default";
+                a = <0x00>;
+                status = "okay";
+        };
+
+	sound { /* SAI5: SGTL5000: Audio Codec support */
+		compatible = "fsl,imx-audio-sgtl5000";
+		model = "sgtl5000-audio";
+		ssi-controller = <&sai5>;
+		audio-codec = <&codec>;
+		audio-routing = "MIC_IN", "Mic Jack",
+				"Mic Jack", "Mic Bias",
+				"Headphone Jack", "HP_OUT",
+				"LINE_IN", "Line In Jack";
+	};
+};
+
+&clk {
+	assigned-clocks = <&clk IMX8MN_AUDIO_PLL1>, <&clk IMX8MN_AUDIO_PLL2>;
+	assigned-clock-rates = <393216000>, <361267200>;
+};
+
+&easrc {
+	fsl,asrc-rate  = <48000>;
+	status = "okay";
+};
+
+&iomuxc {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_hog>;
+
+	imx8mn-iwg37m {
+		pinctrl_hog: hoggrp { /* iWave hog Pin Configuration */
+			fsl,pins = <
+				/* GPIO: Expansion Header GPIO IOMUX Pin Configuration */
+				MX8MN_IOMUXC_GPIO1_IO06_GPIO1_IO6		0x41
+				/* GPIO: GPIO Header GPIO IOMUX Pin Configuration */
+				MX8MN_IOMUXC_SAI5_RXFS_GPIO3_IO19		0x41
+				MX8MN_IOMUXC_SAI5_RXC_GPIO3_IO20		0x41
+			>;
+		};
+
+		pinctrl_i2c2: i2c2grp { /* I2C2: IOMUX Pin Configuration */
+			fsl,pins = <
+				MX8MN_IOMUXC_I2C2_SCL_I2C2_SCL			0x400001c3
+				MX8MN_IOMUXC_I2C2_SDA_I2C2_SDA			0x400001c3
+			>;
+		};
+
+		pinctrl_i2c3: i2c3grp { /* I2C3: IOMUX Pin Configuration */
+			fsl,pins = <
+				MX8MN_IOMUXC_I2C3_SCL_I2C3_SCL			0x400001c3
+				MX8MN_IOMUXC_I2C3_SDA_I2C3_SDA			0x400001c3
+			>;
+		};
+
+		pinctrl_i2c2_gpio: i2c2grp-gpio { /* I2C2: I2C GPIO IOMUX Pin Configuration */
+			fsl,pins = <
+				MX8MN_IOMUXC_I2C2_SCL_GPIO5_IO16		0x1c3
+				MX8MN_IOMUXC_I2C2_SDA_GPIO5_IO17		0x1c3
+			>;
+		};
+
+		pinctrl_i2c3_gpio: i2c3grp-gpio { /* I2C3: I2C GPIO IOMUX Pin Configuration */
+			fsl,pins = <
+				MX8MN_IOMUXC_I2C3_SCL_GPIO5_IO18		0x1c3
+				MX8MN_IOMUXC_I2C3_SDA_GPIO5_IO19		0x1c3
+			>;
+		};
+
+		pinctrl_ts_active: tsgrp { /* MIPI DSI: Touch: IOMUX Pin Configuration */
+			fsl,pins = <
+				MX8MN_IOMUXC_GPIO1_IO01_GPIO1_IO1		0x154 /* Touch Interface Reset GPIO */
+				MX8MN_IOMUXC_GPIO1_IO08_GPIO1_IO8		0x41  /* Touch Interface Interrupt GPIO */
+			>;
+		};
+
+		pinctrl_stmpe: stmpeirq { /* STMPE: IOMUX Pin Configuration */
+                        fsl,pins = <
+				MX8MN_IOMUXC_GPIO1_IO07_GPIO1_IO7		0x41
+                        >;
+                };
+
+		pinctrl_sai5: sai5grp { /* SAI5: IOMUX Pin Configuration */
+			fsl,pins = <
+				MX8MN_IOMUXC_SAI5_MCLK_SAI5_MCLK		0xd6
+				MX8MN_IOMUXC_SAI5_RXD2_SAI5_TX_BCLK		0xd6
+				MX8MN_IOMUXC_SAI5_RXD1_SAI5_TX_SYNC		0xd6
+				MX8MN_IOMUXC_SAI5_RXD3_SAI5_TX_DATA0		0xd6
+				MX8MN_IOMUXC_SAI5_RXD0_SAI5_RX_DATA0    	0xd6
+			>;
+		};
+
+		pinctrl_uart2: uart2grp { /* UART2: DATA UART: IOMUX Pin Configuration */
+			fsl,pins = <
+				MX8MN_IOMUXC_SAI3_TXC_UART2_DCE_TX		0x140
+				MX8MN_IOMUXC_SAI3_TXFS_UART2_DCE_RX		0x140
+				MX8MN_IOMUXC_SAI3_RXC_UART2_DCE_CTS_B		0x140
+				MX8MN_IOMUXC_SAI3_RXD_UART2_DCE_RTS_B		0x140
+			>;
+		};
+
+		pinctrl_wdog: wdoggrp { /* WATCHDOG: IOMUX Pin Configuration */
+			fsl,pins = <
+				MX8MN_IOMUXC_GPIO1_IO02_WDOG1_WDOG_B		0xc6
+			>;
+		};
+
+		pinctrl_mipi_dsi_en: mipi_dsi_en { /* MIPI DSI: LCD IOMUX Pin Configuration */
+			fsl,pins = <
+				MX8MN_IOMUXC_SAI3_MCLK_GPIO5_IO2		0x16 /* MIPI LCD Reset GPIO */
+			>;
+		};
+
+		pinctrl_csi_rst: csi_rst_grp { /* MIPI CSI: OV5640 Camera IOMUX Pin Configuration */
+			fsl,pins = <
+				MX8MN_IOMUXC_GPIO1_IO05_GPIO1_IO5		0x19 /* MIPI OV5640 Camera Reset GPIO */
+			>;
+		};
+
+		pinctrl_pwm1: pwm1grp { /* PWM: PWM1 IOMUX Pin Configuration */
+			fsl,pins = <
+				MX8MN_IOMUXC_I2C4_SDA_PWM1_OUT			0x400001c3
+			>;
+		};
+
+		pinctrl_pwm2: pwm2grp { /* PWM: PWM2 IOMUX Pin Configuration */
+			fsl,pins = <
+				MX8MN_IOMUXC_I2C4_SCL_PWM2_OUT			0x400001c3
+			>;
+		};
+	};
+};
+
+&i2c2 { /* I2C: I2C2 Bus */
+	clock-frequency = <400000>;
+	pinctrl-names = "default", "gpio";
+	pinctrl-0 = <&pinctrl_i2c2>;
+	pinctrl-1 = <&pinctrl_i2c2_gpio>;
+	scl-gpios = <&gpio5 16 GPIO_ACTIVE_HIGH>;
+	sda-gpios = <&gpio5 17 GPIO_ACTIVE_HIGH>;
+	status = "okay";
+
+	codec: sgtl5000@a { /* Audio: SGTL5000 Audio Codec */
+		compatible = "fsl,sgtl5000";
+		reg = <0x0a>;
+		clocks = <&audioclk 0>;
+		VDDA-supply = <&reg_3p3v>;
+		VDDIO-supply = <&reg_3p3v>;
+		status = "okay";
+	};
+
+	stmpe0: stmpe811@44 { /* STMPE811: Carrier Board GPIO Expander */
+                compatible = "st,stmpe811";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg = <0x44>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_stmpe>;
+		irq-gpio = <&gpio1 7 IRQ_TYPE_EDGE_RISING>;
+	
+		stmpe_gpio0: stmpe_gpio {
+			compatible = "st,stmpe-gpio";
+			#gpio-cells = <2>;
+			gpio-controller;
+		};
+	};
+};
+
+&i2c3 { /* I2C: I2C3 Bus */
+	clock-frequency = <400000>;
+	pinctrl-names = "default", "gpio";
+	pinctrl-0 = <&pinctrl_i2c3>;
+	pinctrl-1 = <&pinctrl_i2c3_gpio>;
+	scl-gpios = <&gpio5 18 GPIO_ACTIVE_HIGH>;
+	sda-gpios = <&gpio5 19 GPIO_ACTIVE_HIGH>;
+	status = "okay";
+
+	cst148@1a { /* Touch: Hynitron Touch panel (1080p display) */
+		compatible = "hynitron,cst1xx";
+		reg = <0x1a>;
+		vdd_ana-supply = <&reg_3p3v>;
+		vcc_i2c-supply = <&reg_3p3v>;
+		hynitron,panel-coords = <0 1080 0 1920>;
+		hynitron,display-coords = <0 1080 0 1920>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_ts_active>;
+		hynitron,irq-gpio = <&gpio1 8 GPIO_ACTIVE_LOW>;
+		hynitron,rst-gpio = <&gpio1 1 GPIO_ACTIVE_LOW>;
+		report_type = <1>;
+		status = "okay";
+        };
+
+	ov5640: ov5640_mipi@3c { /* MIPI CSI: OV5640 Camera */
+		compatible = "ovti,ov5640";
+		reg = <0x3c>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_csi_rst>;
+		clocks = <&clk IMX8MN_CLK_CLKO1>;
+		clock-names = "xclk";
+		assigned-clocks = <&clk IMX8MN_CLK_CLKO1>;
+		assigned-clock-parents = <&clk IMX8MN_CLK_24M>;
+		assigned-clock-rates = <24000000>;
+		csi_id = <0>;
+		reset-gpios = <&gpio1 5 GPIO_ACTIVE_LOW>;
+		mclk = <24000000>;
+		mclk_source = <0>;
+		mipi_csi;
+		status = "okay";
+		port {
+			ov5640_ep: endpoint {
+				remote-endpoint = <&mipi1_sensor_ep>;
+				data-lanes = <1 2>;
+				clocks-lanes = <0>;
+			};
+		};
+	};
+};
+
+&pwm1 { /* PWM: PWM1 Control */
+        status = "okay";
+};
+
+&pwm2 { /* PWM: PWM2 Control */
+        status = "okay";
+};
+
+&lcdif {
+	status = "okay";
+};
+
+&mipi_dsi { /* MIPI DSI: 1080p MIPI Display */
+	status = "okay";
+
+	panel@0 {
+		compatible = "raydium,rm67198";
+		reg = <0>;
+		pinctrl-0 = <&pinctrl_mipi_dsi_en>;
+		reset-gpio = <&gpio5 2 GPIO_ACTIVE_LOW>;
+		dsi-lanes = <4>;
+		video-mode = <1>;/* 0: burst mode
+				  * 1: non-burst mode with sync event
+				  * 2: non-burst mode with sync pulse
+				  */
+		panel-width-mm = <68>;
+		panel-height-mm = <122>;
+		status = "okay";
+	};
+};
+
+&sai5 { /* SAI5: Serial Audio Interface for Audio Codec */
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_sai5>;
+	assigned-clocks = <&clk IMX8MN_CLK_SAI5>;
+	assigned-clock-parents = <&clk IMX8MN_AUDIO_PLL1_OUT>;
+	assigned-clock-rates = <49152000>;
+	clocks = <&clk IMX8MN_CLK_SAI5_IPG>, <&clk IMX8MN_CLK_DUMMY>,
+		<&clk IMX8MN_CLK_SAI5_ROOT>, <&clk IMX8MN_CLK_DUMMY>,
+		<&clk IMX8MN_CLK_DUMMY>, <&clk IMX8MN_AUDIO_PLL1_OUT>,
+		<&clk IMX8MN_AUDIO_PLL2_OUT>;
+	clock-names = "bus", "mclk0", "mclk1", "mclk2", "mclk3", "pll8k", "pll11k";
+	status = "okay";
+};
+
+&snvs_pwrkey {
+	status = "okay";
+};
+
+&uart2 { /* UART2: Data UART */
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart2>;
+	assigned-clocks = <&clk IMX8MN_CLK_UART2>;
+	assigned-clock-parents = <&clk IMX8MN_SYS_PLL1_80M>;
+	fsl,uart-has-rtscts;
+	status = "okay";
+};
+
+&wdog1 { /* Watchdog */
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_wdog>;
+	fsl,ext-reset-output;
+	status = "okay";
+};
+
+&mipi_csi_1 { /* MIPI CSI: OV5640 MIPI Camera */
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+	port@0 {
+		reg = <0>;
+		mipi1_sensor_ep: endpoint {
+			remote-endpoint = <&ov5640_ep>;
+			data-lanes = <2>;
+			csis-hs-settle = <13>;
+			csis-clk-settle = <2>;
+			csis-wclk;
+		};
+	};
+};
+
+&isi_0 { /* Multimedia: Image Sensing Interface */
+	status = "okay";
+	cap_device {
+		status = "okay";
+	};
+};
+
+&cameradev { /* Multimedia: Camera device */
+	status = "okay";
+};
